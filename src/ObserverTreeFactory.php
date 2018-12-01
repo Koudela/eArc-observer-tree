@@ -40,8 +40,8 @@ class ObserverTreeFactory implements ObserverTreeFactoryInterface
     public function __construct(
         string $absolutePathToDirectoryOfObserverTrees,
         string $namespaceOfDirectoryOfObserverTrees,
-        array $extends = array(),
-        array $ignores = array()
+        array $extends = [],
+        array $ignores = []
     ) {
         $this->primaryDirectory = $absolutePathToDirectoryOfObserverTrees;
         $this->definitionPointer = $extends;

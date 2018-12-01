@@ -38,10 +38,19 @@ class Observer extends Node
      *
      * @param $payload
      * @param int|null $type
-     * @param callable|null $filter
-     * @param null|ContainerInterface $container
+     * @param callable|null $preInitFilter
+     * @param callable|null $preCallFilter
+     * @param callable|null $postCallFilter
+     * @param ContainerInterface|null $container
      */
-    public function callListeners($payload, ?int $type = null, ?callable $filter = null, ?ContainerInterface $container = null): void
+    public function callListeners(
+        $payload,
+        ?int $type = null,
+        ?callable $preInitFilter = null,
+        ?callable $preCallFilter = null,
+        ?callable $postCallFilter = null,
+        ?ContainerInterface $container = null
+    ): void
     {
         asort($this->listener, SORT_NUMERIC);
 
@@ -51,19 +60,38 @@ class Observer extends Node
                 continue;
             }
 
-            $listener = $this->getListener($container, $FQN);
-
-            if ($filter && $return = $filter($listener, $FQN, $this->type[$FQN], $patience))
+            if ($preInitFilter && $return = $preInitFilter($FQN, $this->type[$FQN], $patience))
             {
                 if ($return === self::CALL_LISTENER_BREAK) {
                     break;
                 }
+
                 if ($return === self::CALL_LISTENER_CONTINUE) {
                     continue;
                 }
             }
 
-            $listener->process($payload);
+            $listener = $this->getListener($container, $FQN);
+
+            if ($preCallFilter && $return = $preCallFilter($listener))
+            {
+                if ($return === self::CALL_LISTENER_BREAK) {
+                    break;
+                }
+
+                if ($return === self::CALL_LISTENER_CONTINUE) {
+                    continue;
+                }
+            }
+
+            $result = $listener->process($payload);
+
+            if ($postCallFilter && $return = $postCallFilter($result))
+            {
+                if ($return === self::CALL_LISTENER_BREAK) {
+                    break;
+                }
+            }
         }
     }
 
