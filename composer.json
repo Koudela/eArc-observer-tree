@@ -3,7 +3,7 @@
   "description": "eArc - the explicit architecture framework - observer composite component",
   "type": "library",
   "license": "MIT",
-  "version": "0.0-ALPHA",
+  "version": "0.0-BETA",
   "authors": [
     {
       "name": "Thomas Koudela",

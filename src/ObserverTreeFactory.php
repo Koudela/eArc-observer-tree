@@ -81,7 +81,7 @@ class ObserverTreeFactory implements ObserverTreeFactoryInterface
      */
     protected function buildTree(string $treeName): Observer
     {
-        $tree = new Observer($treeName);
+        $tree = new Observer(null, $treeName);
 
         foreach($this->definitionPointer as list($rootDir, $rootNamespace))
         {
