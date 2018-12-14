@@ -22,5 +22,5 @@ interface EventListenerInterface
      *
      * @return mixed
      */
-    public function process($payload): void;
+    public function process($payload);
 }
