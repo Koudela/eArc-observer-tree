@@ -141,7 +141,7 @@ class ObserverTreeFactory implements ObserverTreeFactoryInterface
 
                 /** @noinspection PhpUndefinedFieldInspection */
                 $type = defined($className . '::EARC_LISTENER_TYPE')
-                    ? $className::EARC_LISTENER_TYPE : 0;
+                    ? $className::EARC_LISTENER_TYPE : 15;
 
                 /** @noinspection PhpUndefinedFieldInspection */
                 $name = defined($className . '::EARC_LISTENER_CONTAINER_ID')
