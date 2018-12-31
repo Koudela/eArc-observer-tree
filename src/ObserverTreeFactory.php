@@ -119,7 +119,8 @@ class ObserverTreeFactory implements ObserverTreeFactoryInterface
                 $this->processDir(
                     $namespace,
                     $fileName,
-                    new Observer($node, $fileName)
+                    $node->hasChild($fileName) ? $node->getChild($fileName)
+                        : new Observer($node, $fileName)
                 );
                 chdir('..');
                 continue;

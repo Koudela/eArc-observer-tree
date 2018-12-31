@@ -20,7 +20,7 @@ interface EventListenerInterface
      *
      * @param mixed $payload
      *
-     * @return mixed
+     * @return mixed|void
      */
     public function process($payload);
 }
