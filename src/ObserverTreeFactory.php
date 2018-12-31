@@ -11,7 +11,7 @@
 namespace eArc\ObserverTree;
 
 use eArc\ObserverTree\Exceptions\InvalidObserverTreeNameException;
-use eArc\ObserverTree\Interfaces\EventListenerInterface;
+use eArc\ObserverTree\Interfaces\EventListenerFactoryInterface;
 use eArc\ObserverTree\Interfaces\ObserverTreeFactoryInterface;
 
 /**
@@ -133,7 +133,7 @@ class ObserverTreeFactory implements ObserverTreeFactoryInterface
                 continue;
             }
 
-            if (is_subclass_of($className, EventListenerInterface::class))
+            if (is_subclass_of($className, EventListenerFactoryInterface::class))
             {
                 /** @noinspection PhpUndefinedFieldInspection */
                 $patience = defined($className . '::EARC_LISTENER_PATIENCE')
