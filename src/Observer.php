@@ -10,7 +10,7 @@
 
 namespace eArc\ObserverTree;
 
-use eArc\ObserverTree\Interfaces\EventListenerInterface;
+use eArc\ObserverTree\Interfaces\EventListenerFactoryInterface;
 use eArc\Tree\Node;
 use Psr\Container\ContainerInterface;
 
@@ -84,12 +84,14 @@ class Observer extends Node
                 }
             }
 
-            $result = $listener->process($payload);
+            if (method_exists($listener, 'process')) {
+                $result = $listener->process($payload);
 
-            if ($postCallFilter && $return = $postCallFilter($result))
-            {
-                if ($return === self::CALL_LISTENER_BREAK) {
-                    break;
+                if ($postCallFilter && $return = $postCallFilter($result))
+                {
+                    if ($return === self::CALL_LISTENER_BREAK) {
+                        break;
+                    }
                 }
             }
         }
@@ -103,9 +105,9 @@ class Observer extends Node
      * @param null|ContainerInterface $container
      * @param string $FQN
      *
-     * @return EventListenerInterface
+     * @return EventListenerFactoryInterface
      */
-    protected function getListener(?ContainerInterface $container, string $FQN): EventListenerInterface
+    protected function getListener(?ContainerInterface $container, string $FQN): EventListenerFactoryInterface
     {
         if ($container && $container->has($FQN))
         {
