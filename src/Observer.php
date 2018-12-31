@@ -87,7 +87,7 @@ class Observer extends Node
             if (method_exists($listener, 'process')) {
                 $result = $listener->process($payload);
 
-                if ($postCallFilter && $return = $postCallFilter($result))
+                if ($postCallFilter && $return = $postCallFilter($result, $listener))
                 {
                     if ($return === self::CALL_LISTENER_BREAK) {
                         break;
