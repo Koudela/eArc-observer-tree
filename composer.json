@@ -15,7 +15,8 @@
   "require": {
     "php": "^7.2",
     "earc/tree": "dev-master",
-    "psr/container": "^1.0"
+    "psr/container": "^1.0",
+    "earc/observer": "dev-master"
   },
   "autoload": {
     "psr-4" : {

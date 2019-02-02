@@ -11,12 +11,13 @@
 
 namespace eArc\ObserverTree\Exceptions;
 
+use InvalidArgumentException;
 use Throwable;
 
 /**
  * Gets thrown if a name does not belong to any observer tree.
  */
-class InvalidObserverTreeNameException extends \InvalidArgumentException
+class InvalidObserverTreeNameException extends InvalidArgumentException
 {
     public function __construct(string $treeName = '', int $code = 0, Throwable $previous = null)
     {

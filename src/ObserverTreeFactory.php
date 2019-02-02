@@ -11,8 +11,8 @@
 
 namespace eArc\ObserverTree;
 
+use eArc\Observer\Interfaces\ListenerInterface;
 use eArc\ObserverTree\Exceptions\InvalidObserverTreeNameException;
-use eArc\ObserverTree\Interfaces\EventListenerFactoryInterface;
 use eArc\ObserverTree\Interfaces\ObserverTreeFactoryInterface;
 
 /**
@@ -20,8 +20,8 @@ use eArc\ObserverTree\Interfaces\ObserverTreeFactoryInterface;
  */
 class ObserverTreeFactory implements ObserverTreeFactoryInterface
 {
-    /** @var array */
-    protected $trees = [];
+    /** @var ObserverNode[] */
+    protected $instances = [];
 
     /** @var array */
     protected $definitionPointer;
@@ -29,20 +29,20 @@ class ObserverTreeFactory implements ObserverTreeFactoryInterface
     /** @var string */
     protected $primaryDirectory;
 
-    /** @var array */
-    protected $ignores;
+    /** @var string[] */
+    protected $ignoredListenerClassNames;
 
     /**
      * @param string $absolutePathToDirectoryOfObserverTrees
      * @param string $namespaceOfDirectoryOfObserverTrees
      * @param array  $extends
-     * @param array  $ignores
+     * @param array  $ignoredListenerClassNames
      */
     public function __construct(
         string $absolutePathToDirectoryOfObserverTrees,
         string $namespaceOfDirectoryOfObserverTrees,
         array $extends = [],
-        array $ignores = []
+        array $ignoredListenerClassNames = []
     ) {
         $this->primaryDirectory = $absolutePathToDirectoryOfObserverTrees;
         $this->definitionPointer = $extends;
@@ -50,15 +50,21 @@ class ObserverTreeFactory implements ObserverTreeFactoryInterface
             $absolutePathToDirectoryOfObserverTrees,
             $namespaceOfDirectoryOfObserverTrees
         ];
-        $this->ignores = $ignores;
+        $this->ignoredListenerClassNames = $ignoredListenerClassNames;
     }
 
     /**
      * @inheritdoc
+     *
+     * @throws \eArc\Observer\Exception\NoValidListenerException
+     * @throws \eArc\Tree\Exceptions\DoesNotBelongToParentException
+     * @throws \eArc\Tree\Exceptions\NodeOverwriteException
+     * @throws \eArc\Tree\Exceptions\NotFoundException
+     * @throws \eArc\Tree\Exceptions\NotPartOfTreeException
      */
-    public function get(string $treeName): Observer
+    public function get(string $treeName): ObserverNode
     {
-        if (!isset($this->trees[$treeName]))
+        if (!isset($this->instances[$treeName]))
         {
             chdir($this->primaryDirectory);
 
@@ -67,10 +73,10 @@ class ObserverTreeFactory implements ObserverTreeFactoryInterface
                 throw new InvalidObserverTreeNameException($treeName);
             }
 
-            $this->trees[$treeName] = $this->buildTree($treeName);
+            $this->instances[$treeName] = $this->buildTree($treeName);
         }
 
-        return $this->trees[$treeName];
+        return $this->instances[$treeName];
     }
 
     /**
@@ -78,11 +84,17 @@ class ObserverTreeFactory implements ObserverTreeFactoryInterface
      *
      * @param string $treeName
      *
-     * @return Observer
+     * @return ObserverNode
+     *
+     * @throws \eArc\Observer\Exception\NoValidListenerException
+     * @throws \eArc\Tree\Exceptions\DoesNotBelongToParentException
+     * @throws \eArc\Tree\Exceptions\NodeOverwriteException
+     * @throws \eArc\Tree\Exceptions\NotFoundException
+     * @throws \eArc\Tree\Exceptions\NotPartOfTreeException
      */
-    protected function buildTree(string $treeName): Observer
+    protected function buildTree(string $treeName): ObserverNode
     {
-        $tree = new Observer(null, $treeName);
+        $tree = new ObserverNode(null, $treeName);
 
         foreach($this->definitionPointer as list($rootDir, $rootNamespace))
         {
@@ -102,9 +114,15 @@ class ObserverTreeFactory implements ObserverTreeFactoryInterface
      *
      * @param string $namespace
      * @param string $nodeName
-     * @param Observer $node
+     * @param ObserverNode $node
+     *
+     * @throws \eArc\Observer\Exception\NoValidListenerException
+     * @throws \eArc\Tree\Exceptions\DoesNotBelongToParentException
+     * @throws \eArc\Tree\Exceptions\NodeOverwriteException
+     * @throws \eArc\Tree\Exceptions\NotFoundException
+     * @throws \eArc\Tree\Exceptions\NotPartOfTreeException
      */
-    protected function processDir(string $namespace, string $nodeName, Observer $node): void
+    protected function processDir(string $namespace, string $nodeName, ObserverNode $node): void
     {
         chdir($nodeName);
         $namespace .= '\\' . $nodeName;
@@ -121,7 +139,7 @@ class ObserverTreeFactory implements ObserverTreeFactoryInterface
                     $namespace,
                     $fileName,
                     $node->hasChild($fileName) ? $node->getChild($fileName)
-                        : new Observer($node, $fileName)
+                        : new ObserverNode($node, $fileName)
                 );
                 chdir('..');
                 continue;
@@ -129,26 +147,10 @@ class ObserverTreeFactory implements ObserverTreeFactoryInterface
 
             $className = $namespace . '\\' . substr($fileName, 0,-4);
 
-            if (isset($this->ignores[$className]))
+            if (!isset($this->ignoredListenerClassNames[$className])
+                && is_subclass_of($className, ListenerInterface::class))
             {
-                continue;
-            }
-
-            if (is_subclass_of($className, EventListenerFactoryInterface::class))
-            {
-                /** @noinspection PhpUndefinedFieldInspection */
-                $patience = defined($className . '::EARC_LISTENER_PATIENCE')
-                    ? $className::EARC_LISTENER_PATIENCE : 0;
-
-                /** @noinspection PhpUndefinedFieldInspection */
-                $type = defined($className . '::EARC_LISTENER_TYPE')
-                    ? $className::EARC_LISTENER_TYPE : 15;
-
-                /** @noinspection PhpUndefinedFieldInspection */
-                $name = defined($className . '::EARC_LISTENER_CONTAINER_ID')
-                    ? $className::EARC_LISTENER_CONTAINER_ID : $className;
-
-                $node->registerListener($name, $type, $patience);
+                $node->registerListener($className);
             }
         }
     }
