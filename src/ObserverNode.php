@@ -29,9 +29,7 @@ class ObserverNode implements ObserverTreeInterface
      * @param NodeInterface|null $parent
      * @param string|null $name
      *
-     * @throws \eArc\Tree\Exceptions\DoesNotBelongToParentException
      * @throws \eArc\Tree\Exceptions\NodeOverwriteException
-     * @throws \eArc\Tree\Exceptions\NotPartOfTreeException
      */
     public function __construct(?NodeInterface $parent = null, ?string $name = null)
     {
