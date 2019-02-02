@@ -14,6 +14,7 @@ namespace eArc\ObserverTree;
 use eArc\Observer\Interfaces\ListenerInterface;
 use eArc\ObserverTree\Exceptions\InvalidObserverTreeNameException;
 use eArc\ObserverTree\Interfaces\ObserverTreeFactoryInterface;
+use eArc\ObserverTree\Interfaces\ObserverTreeInterface;
 
 /**
  * Factory building observer trees from the file system.
@@ -62,7 +63,7 @@ class ObserverTreeFactory implements ObserverTreeFactoryInterface
      * @throws \eArc\Tree\Exceptions\NotFoundException
      * @throws \eArc\Tree\Exceptions\NotPartOfTreeException
      */
-    public function get(string $treeName): ObserverNode
+    public function get(string $treeName): ObserverTreeInterface
     {
         if (!isset($this->instances[$treeName]))
         {

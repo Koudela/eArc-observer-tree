@@ -12,7 +12,6 @@
 namespace eArc\ObserverTree\Interfaces;
 
 use eArc\ObserverTree\Exceptions\InvalidObserverTreeNameException;
-use eArc\ObserverTree\ObserverNode;
 
 /**
  * Factory for building and handling observer trees with a common root.
@@ -25,9 +24,9 @@ interface ObserverTreeFactoryInterface
      *
      * @param string $treeName
      *
-     * @return ObserverNode
+     * @return ObserverTreeInterface
      *
      * @throws InvalidObserverTreeNameException
      */
-    public function get(string $treeName): ObserverNode;
+    public function get(string $treeName): ObserverTreeInterface;
 }

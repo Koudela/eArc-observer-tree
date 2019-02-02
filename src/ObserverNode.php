@@ -11,7 +11,7 @@
 
 namespace eArc\ObserverTree;
 
-use eArc\Observer\Interfaces\ObserverInterface;
+use eArc\ObserverTree\Interfaces\ObserverTreeInterface;
 use eArc\Tree\Interfaces\NodeInterface;
 use eArc\Observer\Traits\ObserverTrait;
 use eArc\Tree\Traits\NodeTrait;
@@ -20,7 +20,7 @@ use eArc\Tree\Traits\NodeTrait;
  * ObserverNode combines the listenable nature of observer with the tree
  * composite nature of node.
  */
-class ObserverNode implements ObserverInterface, NodeInterface
+class ObserverNode implements ObserverTreeInterface
 {
     use ObserverTrait;
     use NodeTrait;
