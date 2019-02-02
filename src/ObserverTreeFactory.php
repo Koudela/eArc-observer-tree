@@ -15,6 +15,7 @@ use eArc\Observer\Interfaces\ListenerInterface;
 use eArc\ObserverTree\Exceptions\InvalidObserverTreeNameException;
 use eArc\ObserverTree\Interfaces\ObserverTreeFactoryInterface;
 use eArc\ObserverTree\Interfaces\ObserverTreeInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory building observer trees from the file system.
@@ -33,17 +34,22 @@ class ObserverTreeFactory implements ObserverTreeFactoryInterface
     /** @var string[] */
     protected $ignoredListenerClassNames;
 
+    /** @var ContainerInterface|null */
+    protected $container;
+
     /**
-     * @param string $absolutePathToDirectoryOfObserverTrees
-     * @param string $namespaceOfDirectoryOfObserverTrees
-     * @param array  $extends
-     * @param array  $ignoredListenerClassNames
+     * @param string                  $absolutePathToDirectoryOfObserverTrees
+     * @param string                  $namespaceOfDirectoryOfObserverTrees
+     * @param array                   $extends
+     * @param array                   $ignoredListenerClassNames
+     * @param ContainerInterface|null $container
      */
     public function __construct(
         string $absolutePathToDirectoryOfObserverTrees,
         string $namespaceOfDirectoryOfObserverTrees,
         array $extends = [],
-        array $ignoredListenerClassNames = []
+        array $ignoredListenerClassNames = [],
+        ?ContainerInterface $container = null
     ) {
         $this->primaryDirectory = $absolutePathToDirectoryOfObserverTrees;
         $this->definitionPointer = $extends;
@@ -52,6 +58,7 @@ class ObserverTreeFactory implements ObserverTreeFactoryInterface
             $namespaceOfDirectoryOfObserverTrees
         ];
         $this->ignoredListenerClassNames = $ignoredListenerClassNames;
+        $this->container = $container;
     }
 
     /**
@@ -95,7 +102,7 @@ class ObserverTreeFactory implements ObserverTreeFactoryInterface
      */
     protected function buildTree(string $treeName): ObserverNode
     {
-        $tree = new ObserverNode(null, $treeName);
+        $tree = new ObserverNode($this->container, null, $treeName);
 
         foreach($this->definitionPointer as list($rootDir, $rootNamespace))
         {
@@ -140,7 +147,7 @@ class ObserverTreeFactory implements ObserverTreeFactoryInterface
                     $namespace,
                     $fileName,
                     $node->hasChild($fileName) ? $node->getChild($fileName)
-                        : new ObserverNode($node, $fileName)
+                        : new ObserverNode($this->container, $node, $fileName)
                 );
                 chdir('..');
                 continue;
