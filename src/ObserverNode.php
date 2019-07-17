@@ -13,6 +13,7 @@ namespace eArc\ObserverTree;
 
 use eArc\Observer\Interfaces\ListenerInterface;
 use eArc\ObserverTree\Interfaces\ObserverTreeInterface;
+use eArc\Tree\Exceptions\NodeOverwriteException;
 use eArc\Tree\Interfaces\NodeInterface;
 use eArc\Observer\Traits\ObserverTrait;
 use eArc\Tree\Traits\NodeTrait;
@@ -35,7 +36,7 @@ class ObserverNode implements ObserverTreeInterface
      * @param NodeInterface|null $parent
      * @param string|null $name
      *
-     * @throws \eArc\Tree\Exceptions\NodeOverwriteException
+     * @throws NodeOverwriteException
      */
     public function __construct(?ContainerInterface $container = null, ?NodeInterface $parent = null, ?string $name = null)
     {
@@ -43,6 +44,9 @@ class ObserverNode implements ObserverTreeInterface
         $this->initNodeTrait($parent, $name);
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function getListener(string $fQCN): ListenerInterface
     {
         if (!isset($this->listenerInstance[$fQCN]))

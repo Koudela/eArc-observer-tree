@@ -11,10 +11,15 @@
 
 namespace eArc\ObserverTree;
 
+use eArc\Observer\Exception\NoValidListenerException;
 use eArc\Observer\Interfaces\ListenerInterface;
 use eArc\ObserverTree\Exceptions\InvalidObserverTreeNameException;
 use eArc\ObserverTree\Interfaces\ObserverTreeFactoryInterface;
 use eArc\ObserverTree\Interfaces\ObserverTreeInterface;
+use eArc\Tree\Exceptions\DoesNotBelongToParentException;
+use eArc\Tree\Exceptions\NodeOverwriteException;
+use eArc\Tree\Exceptions\NotFoundException;
+use eArc\Tree\Exceptions\NotPartOfTreeException;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -64,11 +69,11 @@ class ObserverTreeFactory implements ObserverTreeFactoryInterface
     /**
      * @inheritdoc
      *
-     * @throws \eArc\Observer\Exception\NoValidListenerException
-     * @throws \eArc\Tree\Exceptions\DoesNotBelongToParentException
-     * @throws \eArc\Tree\Exceptions\NodeOverwriteException
-     * @throws \eArc\Tree\Exceptions\NotFoundException
-     * @throws \eArc\Tree\Exceptions\NotPartOfTreeException
+     * @throws NoValidListenerException
+     * @throws DoesNotBelongToParentException
+     * @throws NodeOverwriteException
+     * @throws NotFoundException
+     * @throws NotPartOfTreeException
      */
     public function get(string $treeName): ObserverTreeInterface
     {
@@ -94,11 +99,11 @@ class ObserverTreeFactory implements ObserverTreeFactoryInterface
      *
      * @return ObserverNode
      *
-     * @throws \eArc\Observer\Exception\NoValidListenerException
-     * @throws \eArc\Tree\Exceptions\DoesNotBelongToParentException
-     * @throws \eArc\Tree\Exceptions\NodeOverwriteException
-     * @throws \eArc\Tree\Exceptions\NotFoundException
-     * @throws \eArc\Tree\Exceptions\NotPartOfTreeException
+     * @throws NoValidListenerException
+     * @throws DoesNotBelongToParentException
+     * @throws NodeOverwriteException
+     * @throws NotFoundException
+     * @throws NotPartOfTreeException
      */
     protected function buildTree(string $treeName): ObserverNode
     {
@@ -124,11 +129,11 @@ class ObserverTreeFactory implements ObserverTreeFactoryInterface
      * @param string $nodeName
      * @param ObserverNode $node
      *
-     * @throws \eArc\Observer\Exception\NoValidListenerException
-     * @throws \eArc\Tree\Exceptions\DoesNotBelongToParentException
-     * @throws \eArc\Tree\Exceptions\NodeOverwriteException
-     * @throws \eArc\Tree\Exceptions\NotFoundException
-     * @throws \eArc\Tree\Exceptions\NotPartOfTreeException
+     * @throws NoValidListenerException
+     * @throws DoesNotBelongToParentException
+     * @throws NodeOverwriteException
+     * @throws NotFoundException
+     * @throws NotPartOfTreeException
      */
     protected function processDir(string $namespace, string $nodeName, ObserverNode $node): void
     {
